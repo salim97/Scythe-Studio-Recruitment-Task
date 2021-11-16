@@ -1,5 +1,10 @@
+#include "filesystemwatcherservice.h"
+#include "watchpathmodel.h"
+#include "eventlogmodel.h"
+
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 
 
 int main(int argc, char *argv[])
@@ -11,6 +16,11 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+    FileSystemWatcherService fileSystemWatcherService;
+    engine.rootContext()->setContextProperty("fileSystemWatcherService", &fileSystemWatcherService);
+    engine.rootContext()->setContextProperty("WatchPathModel", WatchPathModel::instance());
+    engine.rootContext()->setContextProperty("EventLogModel", EventLogModel::instance());
+
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
@@ -18,6 +28,7 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
+
 
     return app.exec();
 }
